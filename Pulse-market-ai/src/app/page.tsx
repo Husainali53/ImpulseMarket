@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+
+/* DATA */
 
 const INDIAN_INDICES = [
   { name: "NIFTY 50", value: 22456, change: 0.45 },
@@ -18,64 +20,56 @@ const FII_DII = {
   fii: 1245.32,
   dii: -832.12,
 };
+
 const INDIAN_STOCKS = [
   { name: "RELIANCE", price: 2845, change: 1.2 },
   { name: "TCS", price: 4012, change: -0.5 },
 ];
-import { useState, useEffect, useRef } from "react";
-import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  BarChart, Bar, PieChart, Pie, Cell, CartesianGrid,
-} from "recharts";
-}
-// ── GENERATE CHART DATA ───────────────────────────────────────────
-function genArea(base: number, pts: number, vol: number) {
-  let v = base;
- return (
-  <main className="p-10 bg-black text-white min-h-screen">
 
-    {/* INDIAN INDICES */}
-    <div>
-      <h2>Indian Indices</h2>
-      {INDIAN_INDICES.map((index) => (
-        <div key={index.name}>
-          {index.name} - {index.value} ({index.change}%)
-        </div>
-      ))}
-    </div>
+/* MAIN COMPONENT */
 
-    {/* MARKET BREADTH */}
-    <div>
-      <h2>Advance / Decline</h2>
-      <p>Adv: {MARKET_BREADTH.advances}</p>
-      <p>Dec: {MARKET_BREADTH.declines}</p>
-      <p>Unch: {MARKET_BREADTH.unchanged}</p>
-    </div>
+export default function Home() {
 
-    {/* FII DII */}
-    <div>
-      <h2>FII / DII</h2>
-      <p>FII: {FII_DII.fii}</p>
-      <p>DII: {FII_DII.dii}</p>
-    </div>
+  const [stocks] = useState(INDIAN_STOCKS);
 
-    {/* STOCK LIST */}
-    <div>
-      <h2>Top Stocks</h2>
-      {stocks.map((stock) => (
-        <div key={stock.name}>
-          {stock.name} - ₹{stock.price} ({stock.change}%)
-        </div>
-      ))}
-    </div>
+  return (
+    <main className="p-10 bg-black text-white min-h-screen">
 
-  </main>
-);
-  return Array.from({ length: pts }, (_, i) => {
-    v = v + (Math.random() - 0.48) * vol;
-    const d = new Date(2024, 0, i + 1);
-    return { t: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }), v: +v.toFixed(2) };
-  });
+      <h1 className="text-3xl mb-6">Pulse Markets AI</h1>
+
+      <div>
+        <h2 className="text-xl mb-2">Indian Indices</h2>
+        {INDIAN_INDICES.map((index) => (
+          <div key={index.name}>
+            {index.name} - {index.value} ({index.change}%)
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-6">
+        <h2 className="text-xl mb-2">Advance / Decline</h2>
+        <p>Adv: {MARKET_BREADTH.advances}</p>
+        <p>Dec: {MARKET_BREADTH.declines}</p>
+        <p>Unch: {MARKET_BREADTH.unchanged}</p>
+      </div>
+
+      <div className="mt-6">
+        <h2 className="text-xl mb-2">FII / DII</h2>
+        <p>FII: ₹{FII_DII.fii}</p>
+        <p>DII: ₹{FII_DII.dii}</p>
+      </div>
+
+      <div className="mt-6">
+        <h2 className="text-xl mb-2">Top Stocks</h2>
+        {stocks.map((stock) => (
+          <div key={stock.name}>
+            {stock.name} - ₹{stock.price} ({stock.change}%)
+          </div>
+        ))}
+      </div>
+
+    </main>
+  );
 }
 const SPX_DATA  = genArea(4500, 60, 18);
 const NDX_DATA  = genArea(14800, 60, 55);

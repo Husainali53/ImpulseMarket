@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 
-// 👇 YAHAN PASTE KARO
-
 const INDIAN_INDICES = [
   { name: "NIFTY 50", value: 22456, change: 0.45 },
   { name: "BANK NIFTY", value: 48210, change: -0.32 },
@@ -29,7 +27,7 @@ import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   BarChart, Bar, PieChart, Pie, Cell, CartesianGrid,
 } from "recharts";
-
+}
 // ── GENERATE CHART DATA ───────────────────────────────────────────
 function genArea(base: number, pts: number, vol: number) {
   let v = base;

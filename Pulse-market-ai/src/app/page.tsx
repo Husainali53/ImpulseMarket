@@ -1,69 +1,89 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
-/* DATA */
-
+// ── DATA ─────────────────────────────────────────────────────────
 const INDIAN_INDICES = [
   { name: "NIFTY 50", value: 22456, change: 0.45 },
   { name: "BANK NIFTY", value: 48210, change: -0.32 },
   { name: "SENSEX", value: 74210, change: 0.61 },
 ];
 
-const MARKET_BREADTH = {
-  advances: 1324,
-  declines: 892,
-  unchanged: 143,
-};
-
-const FII_DII = {
-  fii: 1245.32,
-  dii: -832.12,
-};
-
+const MARKET_BREADTH = { advances: 1324, declines: 892, unchanged: 143 };
+const FII_DII = { fii: 1245.32, dii: -832.12 };
 const INDIAN_STOCKS = [
   { name: "RELIANCE", price: 2845, change: 1.2 },
   { name: "TCS", price: 4012, change: -0.5 },
 ];
 
-/* MAIN COMPONENT */
+// ── ANIMATED NUMBER COMPONENT ─────────────────────────────────────
+function AnimatedNumber({ end, prefix = "", suffix = "" }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [v, setV] = useState(0);
 
+  useEffect(() => {
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        let start = 0;
+        const step = () => {
+          start += Math.ceil(end / 50);
+          if (start < end) {
+            setV(start);
+            requestAnimationFrame(step);
+          } else {
+            setV(end);
+          }
+        };
+        step();
+      }
+    }, { threshold: 0.5 });
+
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [end]);
+
+  return <span ref={ref}>{prefix}{v.toLocaleString()}{suffix}</span>;
+}
+
+// ── MAIN COMPONENT ────────────────────────────────────────────────
 export default function Home() {
-
-  const [stocks] = useState(INDIAN_STOCKS);
+  const [dark, setDark] = useState(true);
 
   return (
     <main className="p-10 bg-black text-white min-h-screen">
 
-      <h1 className="text-3xl mb-6">Pulse Markets AI</h1>
-
+      {/* INDIAN INDICES */}
       <div>
-        <h2 className="text-xl mb-2">Indian Indices</h2>
+        <h2>Indian Indices</h2>
         {INDIAN_INDICES.map((index) => (
           <div key={index.name}>
-            {index.name} - {index.value} ({index.change}%)
+            {index.name} - <AnimatedNumber end={index.value} /> ({index.change}%)
           </div>
         ))}
       </div>
 
-      <div className="mt-6">
-        <h2 className="text-xl mb-2">Advance / Decline</h2>
+      {/* MARKET BREADTH */}
+      <div>
+        <h2>Advance / Decline</h2>
         <p>Adv: {MARKET_BREADTH.advances}</p>
         <p>Dec: {MARKET_BREADTH.declines}</p>
         <p>Unch: {MARKET_BREADTH.unchanged}</p>
       </div>
 
-      <div className="mt-6">
-        <h2 className="text-xl mb-2">FII / DII</h2>
-        <p>FII: ₹{FII_DII.fii}</p>
-        <p>DII: ₹{FII_DII.dii}</p>
+      {/* FII / DII */}
+      <div>
+        <h2>FII / DII</h2>
+        <p>FII: <AnimatedNumber end={FII_DII.fii} /></p>
+        <p>DII: <AnimatedNumber end={Math.abs(FII_DII.dii)} prefix="-" /></p>
       </div>
 
-      <div className="mt-6">
-        <h2 className="text-xl mb-2">Top Stocks</h2>
-        {stocks.map((stock) => (
+      {/* STOCK LIST */}
+      <div>
+        <h2>Top Stocks</h2>
+        {INDIAN_STOCKS.map((stock) => (
           <div key={stock.name}>
-            {stock.name} - ₹{stock.price} ({stock.change}%)
+            {stock.name} - ₹<AnimatedNumber end={stock.price} /> ({stock.change}%)
           </div>
         ))}
       </div>

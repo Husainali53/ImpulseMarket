@@ -223,7 +223,7 @@ function Counter({ end, suffix = "", prefix = "" }: { end: number; suffix?: stri
     return () => obs.disconnect();
   }, [end]);
   return <span ref={ref}>{prefix}{v.toLocaleString()}{suffix}</span>;
-
+}
 // ── MAIN ─────────────────────────────────────────────────────────
 export default function Home() {
   const [dark, setDark] = useState(true);

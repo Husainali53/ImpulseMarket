@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid, PieChart, Pie, Cell } from "recharts";
 
 // ── DATA ─────────────────────────────────────────────────────────
 const INDIAN_INDICES = [
@@ -18,7 +18,7 @@ const INDIAN_STOCKS = [
 ];
 
 // ── ANIMATED NUMBER COMPONENT ─────────────────────────────────────
-function AnimatedNumber({ end, prefix = "", suffix = "" }) {
+function AnimatedNumber({ end, prefix = "", suffix = "" }: { end: number; prefix?: string; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const [v, setV] = useState(0);
 
@@ -46,117 +46,90 @@ function AnimatedNumber({ end, prefix = "", suffix = "" }) {
   return <span ref={ref}>{prefix}{v.toLocaleString()}{suffix}</span>;
 }
 
-// ── MAIN COMPONENT ────────────────────────────────────────────────
-export default function Home() {
-  const [dark, setDark] = useState(true);
-
-  return (
-    <main className="p-10 bg-black text-white min-h-screen">
-
-      {/* INDIAN INDICES */}
-      <div>
-        <h2>Indian Indices</h2>
-        {INDIAN_INDICES.map((index) => (
-          <div key={index.name}>
-            {index.name} - <AnimatedNumber end={index.value} /> ({index.change}%)
-          </div>
-        ))}
-      </div>
-
-      {/* MARKET BREADTH */}
-      <div>
-        <h2>Advance / Decline</h2>
-        <p>Adv: {MARKET_BREADTH.advances}</p>
-        <p>Dec: {MARKET_BREADTH.declines}</p>
-        <p>Unch: {MARKET_BREADTH.unchanged}</p>
-      </div>
-
-      {/* FII / DII */}
-      <div>
-        <h2>FII / DII</h2>
-        <p>FII: <AnimatedNumber end={FII_DII.fii} /></p>
-        <p>DII: <AnimatedNumber end={Math.abs(FII_DII.dii)} prefix="-" /></p>
-      </div>
-
-      {/* STOCK LIST */}
-      <div>
-        <h2>Top Stocks</h2>
-        {INDIAN_STOCKS.map((stock) => (
-          <div key={stock.name}>
-            {stock.name} - ₹<AnimatedNumber end={stock.price} /> ({stock.change}%)
-          </div>
-        ))}
-      </div>
-
-    </main>
-  );
+// ── HELPER FUNCTION ───────────────────────────────────────────────
+function genArea(start: number, points: number, variance: number) {
+  const data = [];
+  for (let i = 0; i < points; i++) {
+    const val = start + (Math.random() - 0.5) * variance * 2;
+    data.push({ v: Math.round(val), t: `Day ${i + 1}` });
+  }
+  return data;
 }
-const SPX_DATA  = genArea(4500, 60, 18);
-const NDX_DATA  = genArea(14800, 60, 55);
-const BTC_DATA  = genArea(42000, 60, 900);
+
+// ── MARKET DATA ───────────────────────────────────────────────────
+const SPX_DATA = genArea(4500, 60, 18);
+const NDX_DATA = genArea(14800, 60, 55);
+const BTC_DATA = genArea(42000, 60, 900);
 const PORT_DATA = genArea(100000, 60, 1200);
-const VOL_DATA  = Array.from({ length: 14 }, (_, i) => ({
+const VOL_DATA = Array.from({ length: 14 }, (_, i) => ({
   d: `Mar ${i + 1}`,
   v: Math.round(2 + Math.random() * 5),
   c: Math.random() > 0.4,
 }));
+
 const SECTOR_DATA = [
   { name: "Technology", val: 82, chg: 3.2 },
   { name: "Healthcare", val: 55, chg: 0.8 },
-  { name: "Finance",    val: 63, chg: 1.4 },
-  { name: "Energy",     val: 31, chg: -2.1 },
-  { name: "Consumer",   val: 47, chg: -0.5 },
-  { name: "Real Estate",val: 38, chg: -1.2 },
-  { name: "Utilities",  val: 44, chg: 0.3 },
-  { name: "Materials",  val: 59, chg: 1.9 },
+  { name: "Finance", val: 63, chg: 1.4 },
+  { name: "Energy", val: 31, chg: -2.1 },
+  { name: "Consumer", val: 47, chg: -0.5 },
+  { name: "Real Estate", val: 38, chg: -1.2 },
+  { name: "Utilities", val: 44, chg: 0.3 },
+  { name: "Materials", val: 59, chg: 1.9 },
 ];
+
 const PIE_DATA = [
   { name: "Technology", val: 38, color: "#c9a84c" },
-  { name: "Finance",    val: 22, color: "#22d67a" },
+  { name: "Finance", val: 22, color: "#22d67a" },
   { name: "Healthcare", val: 16, color: "#60a5fa" },
-  { name: "Energy",     val: 12, color: "#f05454" },
-  { name: "Other",      val: 12, color: "#6b7280" },
+  { name: "Energy", val: 12, color: "#f05454" },
+  { name: "Other", val: 12, color: "#6b7280" },
 ];
+
 const MARKETS = [
-  { name: "S&P 500",    sym: "SPX",   val: 4783.45,  chg: 1.20,  vol: "3.2B",  mkt: "42.1T",  ai: 88 },
-  { name: "NASDAQ",     sym: "NDX",   val: 15123.67, chg: 0.80,  vol: "2.8B",  mkt: "19.4T",  ai: 85 },
-  { name: "NVDA",       sym: "NVDA",  val: 621.90,   chg: 4.33,  vol: "420M",  mkt: "1.54T",  ai: 94 },
-  { name: "AAPL",       sym: "AAPL",  val: 186.42,   chg: 2.10,  vol: "280M",  mkt: "2.89T",  ai: 82 },
-  { name: "META",       sym: "META",  val: 484.10,   chg: 3.21,  vol: "190M",  mkt: "1.24T",  ai: 87 },
-  { name: "TSLA",       sym: "TSLA",  val: 241.08,   chg: -1.45, vol: "510M",  mkt: "0.76T",  ai: 61 },
-  { name: "MSFT",       sym: "MSFT",  val: 415.32,   chg: 1.85,  vol: "160M",  mkt: "3.09T",  ai: 90 },
-  { name: "AMZN",       sym: "AMZN",  val: 182.75,   chg: -0.44, vol: "230M",  mkt: "1.89T",  ai: 78 },
-  { name: "GOOGL",      sym: "GOOGL", val: 172.63,   chg: 0.92,  vol: "145M",  mkt: "1.71T",  ai: 80 },
-  { name: "JPM",        sym: "JPM",   val: 198.44,   chg: -0.88, vol: "98M",   mkt: "0.57T",  ai: 66 },
-  { name: "NIFTY 50",   sym: "NIFTY", val: 21456.30, chg: -0.30, vol: "1.1B",  mkt: "3.2T",   ai: 71 },
-  { name: "BTC/USD",    sym: "BTC",   val: 67320,    chg: 3.20,  vol: "28B",   mkt: "1.32T",  ai: 79 },
+  { name: "S&P 500", sym: "SPX", val: 4783.45, chg: 1.20, vol: "3.2B", mkt: "42.1T", ai: 88 },
+  { name: "NASDAQ", sym: "NDX", val: 15123.67, chg: 0.80, vol: "2.8B", mkt: "19.4T", ai: 85 },
+  { name: "NVDA", sym: "NVDA", val: 621.90, chg: 4.33, vol: "420M", mkt: "1.54T", ai: 94 },
+  { name: "AAPL", sym: "AAPL", val: 186.42, chg: 2.10, vol: "280M", mkt: "2.89T", ai: 82 },
+  { name: "META", sym: "META", val: 484.10, chg: 3.21, vol: "190M", mkt: "1.24T", ai: 87 },
+  { name: "TSLA", sym: "TSLA", val: 241.08, chg: -1.45, vol: "510M", mkt: "0.76T", ai: 61 },
+  { name: "MSFT", sym: "MSFT", val: 415.32, chg: 1.85, vol: "160M", mkt: "3.09T", ai: 90 },
+  { name: "AMZN", sym: "AMZN", val: 182.75, chg: -0.44, vol: "230M", mkt: "1.89T", ai: 78 },
+  { name: "GOOGL", sym: "GOOGL", val: 172.63, chg: 0.92, vol: "145M", mkt: "1.71T", ai: 80 },
+  { name: "JPM", sym: "JPM", val: 198.44, chg: -0.88, vol: "98M", mkt: "0.57T", ai: 66 },
+  { name: "NIFTY 50", sym: "NIFTY", val: 21456.30, chg: -0.30, vol: "1.1B", mkt: "3.2T", ai: 71 },
+  { name: "BTC/USD", sym: "BTC", val: 67320, chg: 3.20, vol: "28B", mkt: "1.32T", ai: 79 },
 ];
+
 const NEWS = [
-  { tag: "Bullish", type: "bull", title: "Fed holds rates steady as inflation cools — AI models flag historic buying window in tech", src: "Reuters", time: "2h", score: 88, excerpt: "CPI printing below expectations for the third consecutive month — quantitative models detect early hallmarks of a sustained rally across large-cap growth stocks." },
+  { tag: "Bullish", type: "bull", title: "Fed holds rates steady as inflation cools — AI models flag historic buying window in tech", src: "Reuters", time: "2h", score: 88, excerpt: "Market sentiment turns positive..." },
   { tag: "AI Pick", type: "ai", title: "NVDA earnings: record data center revenue expected amid unstoppable AI infrastructure boom", src: "WSJ", time: "4h", score: 94, excerpt: null },
-  { tag: "Risk",    type: "bear", title: "China PMI contracts second straight month — global supply chain pressure building fast", src: "FT", time: "5h", score: 76, excerpt: null },
-  { tag: "Signal",  type: "bull", title: "EV sector rotation: institutional flows pointing to contrarian entry point forming now", src: "Barron's", time: "6h", score: 81, excerpt: null },
-  { tag: "Macro",   type: "neutral", title: "Dollar weakens ahead of FOMC minutes — EM currencies and commodities surge", src: "Bloomberg", time: "7h", score: 69, excerpt: null },
+  { tag: "Risk", type: "bear", title: "China PMI contracts second straight month — global supply chain pressure building fast", src: "FT", time: "5h", score: 76, excerpt: null },
+  { tag: "Signal", type: "bull", title: "EV sector rotation: institutional flows pointing to contrarian entry point forming now", src: "Barron's", time: "6h", score: 81, excerpt: null },
+  { tag: "Macro", type: "neutral", title: "Dollar weakens ahead of FOMC minutes — EM currencies and commodities surge", src: "Bloomberg", time: "7h", score: 69, excerpt: null },
   { tag: "Bullish", type: "bull", title: "Apple Vision Pro enterprise adoption accelerating — analysts raise 12-month targets", src: "CNBC", time: "9h", score: 85, excerpt: null },
 ];
+
 const PICKS = [
-  { sym: "NVDA", name: "NVIDIA Corp",     act: "BUY",  score: 94, reason: "AI chip supercycle, earnings beat incoming",   entry: "$610", target: "$720", stop: "$570", risk: "Low",    sector: "Tech"   },
-  { sym: "META", name: "Meta Platforms",  act: "BUY",  score: 87, reason: "Ad revenue rebound + AI monetization ramp",    entry: "$480", target: "$560", stop: "$455", risk: "Medium", sector: "Tech"   },
-  { sym: "MSFT", name: "Microsoft Corp",  act: "BUY",  score: 90, reason: "Copilot enterprise ARR accelerating sharply",  entry: "$410", target: "$480", stop: "$390", risk: "Low",    sector: "Tech"   },
-  { sym: "XOM",  name: "Exxon Mobil",     act: "SELL", score: 38, reason: "Demand pressure + China PMI weakness signal",  entry: "$102", target: "$88",  stop: "$108", risk: "Medium", sector: "Energy" },
-  { sym: "TSLA", name: "Tesla Inc",       act: "HOLD", score: 61, reason: "Price war pressure, await Q2 margin clarity",  entry: "$241", target: "$260", stop: "$218", risk: "High",   sector: "Auto"   },
-  { sym: "JPM",  name: "JPMorgan Chase",  act: "HOLD", score: 66, reason: "Rate sensitivity + commercial real estate risk",entry: "$198", target: "$210", stop: "$185", risk: "Medium", sector: "Finance"},
+  { sym: "NVDA", name: "NVIDIA Corp", act: "BUY", score: 94, reason: "AI chip supercycle, earnings beat incoming", entry: "$610", target: "$720", stop: "$570", risk: "Low", sector: "Tech" },
+  { sym: "META", name: "Meta Platforms", act: "BUY", score: 87, reason: "Ad revenue rebound + AI monetization ramp", entry: "$480", target: "$560", stop: "$455", risk: "Medium", sector: "Tech" },
+  { sym: "MSFT", name: "Microsoft Corp", act: "BUY", score: 90, reason: "Copilot enterprise ARR accelerating sharply", entry: "$410", target: "$480", stop: "$390", risk: "Low", sector: "Tech" },
+  { sym: "XOM", name: "Exxon Mobil", act: "SELL", score: 38, reason: "Demand pressure + China PMI weakness signal", entry: "$102", target: "$88", stop: "$108", risk: "Medium", sector: "Energy" },
+  { sym: "TSLA", name: "Tesla Inc", act: "HOLD", score: 61, reason: "Price war pressure, await Q2 margin clarity", entry: "$241", target: "$260", stop: "$218", risk: "High", sector: "Auto" },
+  { sym: "JPM", name: "JPMorgan Chase", act: "HOLD", score: 66, reason: "Rate sensitivity + commercial real estate risk", entry: "$198", target: "$210", stop: "$185", risk: "Medium", sector: "Finance" },
 ];
+
 const HEATMAP = [
   { name: "NVDA", chg: 4.33 }, { name: "META", chg: 3.21 }, { name: "AAPL", chg: 2.10 },
-  { name: "MSFT", chg: 1.85 }, { name: "GOOGL", chg: 0.92 }, { name: "V",    chg: 1.22 },
-  { name: "BRK",  chg: 0.31 }, { name: "AMZN", chg: -0.44 }, { name: "JPM",  chg: -0.88 },
-  { name: "TSLA", chg: -1.45 }, { name: "JNJ",  chg: -0.33 }, { name: "XOM",  chg: -2.10 },
+  { name: "MSFT", chg: 1.85 }, { name: "GOOGL", chg: 0.92 }, { name: "V", chg: 1.22 },
+  { name: "BRK", chg: 0.31 }, { name: "AMZN", chg: -0.44 }, { name: "JPM", chg: -0.88 },
+  { name: "TSLA", chg: -1.45 }, { name: "JNJ", chg: -0.33 }, { name: "XOM", chg: -2.10 },
 ];
+
 const WATCHLIST = [
   { sym: "NVDA", val: 621.90, chg: 4.33, data: genArea(600, 20, 8) },
   { sym: "AAPL", val: 186.42, chg: 2.10, data: genArea(182, 20, 2) },
-  { sym: "BTC",  val: 67320,  chg: 3.20, data: genArea(64000, 20, 600) },
+  { sym: "BTC", val: 67320, chg: 3.20, data: genArea(64000, 20, 600) },
   { sym: "TSLA", val: 241.08, chg: -1.45, data: genArea(248, 20, 4) },
 ];
 
@@ -196,9 +169,6 @@ function MiniSpark({ data, up }: { data: { v: number }[]; up: boolean }) {
 }
 
 // ── GAUGE ─────────────────────────────────────────────────────────
-export default function Home() {
-
-  const [stocks, setStocks] = useState(INDIAN_STOCKS);
 function Gauge({ score }: { score: number }) {
   const a = -135 + (score / 100) * 270;
   const label = score >= 75 ? "Strongly Bullish" : score >= 55 ? "Moderately Bullish" : score >= 45 ? "Neutral" : score >= 30 ? "Bearish" : "Strongly Bearish";
@@ -235,8 +205,17 @@ function Counter({ end, suffix = "", prefix = "" }: { end: number; suffix?: stri
   useEffect(() => {
     const obs = new IntersectionObserver(([e]) => {
       if (e.isIntersecting) {
-        let s = 0; const step = end / 55;
-        const t = setInterval(() => { s += step; if (s >= end) { setV(end); clearInterval(t); } else setV(Math.floor(s)); }, 18);
+        let s = 0;
+        const step = end / 55;
+        const t = setInterval(() => {
+          s += step;
+          if (s >= end) {
+            setV(end);
+            clearInterval(t);
+          } else {
+            setV(Math.floor(s));
+          }
+        }, 18);
       }
     });
     if (ref.current) obs.observe(ref.current);
@@ -244,24 +223,27 @@ function Counter({ end, suffix = "", prefix = "" }: { end: number; suffix?: stri
   }, [end]);
   return <span ref={ref}>{prefix}{v.toLocaleString()}{suffix}</span>;
 }
+
 // ── MAIN ─────────────────────────────────────────────────────────
 export default function Home() {
   const [dark, setDark] = useState(true);
   const [markets, setMarkets] = useState(MARKETS);
-  const [tab, setTab] = useState<"overview"|"picks"|"news"|"portfolio">("overview");
+  const [tab, setTab] = useState<"overview" | "picks" | "news" | "portfolio">("overview");
   const [sortCol, setSortCol] = useState<string>("ai");
-  const [sortDir, setSortDir] = useState<"asc"|"desc">("desc");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [email, setEmail] = useState("");
   const [done, setDone] = useState(false);
   const [activePie, setActivePie] = useState<number | null>(null);
 
   useEffect(() => {
     const t = setInterval(() => {
-      setMarkets(p => p.map(m => ({
-        ...m,
-        val: +(m.val * (1 + (Math.random() - 0.499) * 0.0009)).toFixed(2),
-        chg: +(m.chg + (Math.random() - 0.499) * 0.05).toFixed(2),
-      })));
+      setMarkets(p =>
+        p.map(m => ({
+          ...m,
+          val: +(m.val * (1 + (Math.random() - 0.499) * 0.0009)).toFixed(2),
+          chg: +(m.chg + (Math.random() - 0.499) * 0.05).toFixed(2),
+        }))
+      );
     }, 2400);
     return () => clearInterval(t);
   }, []);
@@ -316,7 +298,7 @@ export default function Home() {
         .theme-wrap *{transition:background-color 0.35s ease,border-color 0.35s ease,color 0.3s ease;}
         .theme-wrap .notransition{transition:none!important;}
         body{margin:0;padding:0;}
-        .gbg{position:fixed;inset:0;background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:72px 72px;pointer-events:none;z-index:0;}
+        .gbg{position:fixed;inset:0;background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:72px 72px;pointer-events:none;z-index:1;}
         .orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;animation:drift 14s ease-in-out infinite alternate;z-index:0;}
         .o1{width:700px;height:700px;background:var(--orb1);top:-200px;right:-100px;}
         .o2{width:500px;height:500px;background:var(--orb2);bottom:-100px;left:-100px;animation-delay:-7s;}
@@ -353,7 +335,7 @@ export default function Home() {
         /* NAV */
         nav{position:fixed;top:0;left:0;right:0;z-index:300;height:66px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;background:var(--nav-bg);backdrop-filter:blur(24px);border-bottom:1px solid var(--bd);}
         .nl{display:flex;align-items:center;gap:14px;}
-        .lm{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:#07090e;}
+        .lm{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;color:#07090e;font-size:18px;}
         .ln{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;letter-spacing:-0.02em;}
         .ln span{color:var(--gold);}
         .nls{display:flex;gap:32px;list-style:none;}
@@ -375,16 +357,16 @@ export default function Home() {
 
         /* HERO */
         .hero{padding:186px 48px 72px;max-width:1340px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:68px;align-items:center;}
-        .hbadge{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.18);border-radius:100px;padding:5px 16px;font-size:11px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:22px;}
+        .hbadge{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.18);border-radius:100px;padding:5px 16px;font-size:11px;color:var(--gold);letter-spacing:0.06em;}
         .ldot{width:7px;height:7px;background:var(--grn);border-radius:50%;animation:pd 2s ease-in-out infinite;}
         @keyframes pd{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.7);}}
         h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(42px,5.2vw,70px);line-height:1;letter-spacing:-0.035em;margin-bottom:20px;}
         h1 em{font-family:'Instrument Serif',serif;font-style:italic;color:var(--gold);}
         .hp{font-size:14.5px;line-height:1.75;color:var(--dm);margin-bottom:38px;max-width:460px;}
         .hbtns{display:flex;gap:14px;flex-wrap:wrap;}
-        .bh{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:#07090e;padding:15px 34px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 0 40px rgba(201,168,76,0.25);transition:all 0.25s;}
+        .bh{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:#07090e;padding:15px 34px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all 0.2s;}
         .bh:hover{transform:translateY(-2px);box-shadow:0 10px 48px rgba(201,168,76,0.4);}
-        .bo{background:none;border:1px solid rgba(255,255,255,0.1);color:var(--tx);padding:15px 34px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+        .bo{background:none;border:1px solid rgba(255,255,255,0.1);color:var(--tx);padding:15px 34px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s;}
         .bo:hover{border-color:rgba(255,255,255,0.22);background:rgba(255,255,255,0.03);}
         .theme-light .bo{border-color:rgba(0,0,0,0.15);}
         .theme-light .bo:hover{border-color:rgba(0,0,0,0.3);background:rgba(0,0,0,0.04);}
@@ -402,7 +384,7 @@ export default function Home() {
         .txt strong{color:var(--tx);}
 
         /* HERO WIDGET */
-        .hw{background:var(--sf);border:1px solid var(--bd);border-radius:18px;padding:24px;position:relative;overflow:hidden;animation:flt 7s ease-in-out infinite;box-shadow:0 32px 80px rgba(0,0,0,0.55),inset 0 1px 0 rgba(255,255,255,0.055);}
+        .hw{background:var(--sf);border:1px solid var(--bd);border-radius:18px;padding:24px;position:relative;overflow:hidden;animation:flt 7s ease-in-out infinite;box-shadow:0 32px 80px rgba(0,0,0,0.5);}
         .hw::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
         @keyframes flt{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
         .wh{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
@@ -457,19 +439,19 @@ export default function Home() {
         /* TABS */
         .tw{max-width:1340px;margin:0 auto;padding:68px 48px;}
         .tabs{display:flex;gap:4px;background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:5px;width:fit-content;margin-bottom:32px;}
-        .tab{padding:9px 26px;border-radius:7px;border:none;background:none;color:var(--mt);font-family:'Syne',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.04em;cursor:pointer;transition:all 0.2s;text-transform:uppercase;}
+        .tab{padding:9px 26px;border-radius:7px;border:none;background:none;color:var(--mt);font-family:'Syne',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.04em;cursor:pointer;transition:all 0.2s;}
         .tab.on{background:var(--sf);color:var(--tx);box-shadow:0 2px 12px rgba(0,0,0,0.4);}
 
         /* TABLE */
         .tbl{width:100%;border-collapse:collapse;}
-        .tbl th{font-size:10px;color:var(--mt);text-transform:uppercase;letter-spacing:0.08em;padding:0 14px 12px;text-align:left;border-bottom:1px solid var(--bd);cursor:pointer;user-select:none;transition:color 0.2s;white-space:nowrap;}
+        .tbl th{font-size:10px;color:var(--mt);text-transform:uppercase;letter-spacing:0.08em;padding:0 14px 12px;text-align:left;border-bottom:1px solid var(--bd);cursor:pointer;user-select:none;transition:color 0.2s;}
         .tbl th:hover{color:var(--gold);}
         .tbl th.act{color:var(--gold);}
         .tbl td{padding:13px 14px;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.04);}
         .tbl tr{transition:background 0.18s;cursor:pointer;}
         .tbl tr:hover{background:rgba(255,255,255,0.025);}
         .sc{display:inline-flex;align-items:center;gap:9px;}
-        .si2{width:30px;height:30px;background:var(--sf2);border:1px solid var(--bd);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:9px;font-weight:700;color:var(--gold);letter-spacing:0.04em;}
+        .si2{width:30px;height:30px;background:var(--sf2);border:1px solid var(--bd);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:9px;font-weight:700;color:var(--gold);}
         .sn2{font-family:'Syne',sans-serif;font-weight:600;font-size:13px;}
         .ss2{font-size:10px;color:var(--mt);margin-top:1px;}
         .cp{display:inline-flex;align-items:center;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:600;}
@@ -573,7 +555,7 @@ export default function Home() {
         .ei{flex:1;background:var(--bg3);border:1px solid var(--bd2);color:var(--tx);padding:13px 18px;border-radius:9px;font-family:'DM Mono',monospace;font-size:13px;outline:none;transition:border-color 0.2s;}
         .ei:focus{border-color:rgba(201,168,76,0.4);}
         .ei::placeholder{color:var(--mt);}
-        .bsu{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:#07090e;padding:13px 24px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.03em;cursor:pointer;transition:all 0.2s;white-space:nowrap;box-shadow:0 4px 24px rgba(201,168,76,0.25);}
+        .bsu{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:#07090e;padding:13px 24px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.04em;cursor:pointer;transition:all 0.2s;}
         .bsu:hover{transform:translateY(-1px);box-shadow:0 8px 36px rgba(201,168,76,0.4);}
         .fn{font-size:11px;color:var(--mt);margin-top:13px;}
         .ok{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--grn);font-size:14px;font-family:'Syne',sans-serif;font-weight:600;}
@@ -640,6 +622,24 @@ export default function Home() {
       <div className="tkb">
         <div className="tkt">
           {[...markets, ...markets].map((m, i) => (
+            <div className="ti" key={i}>
+              <span className="tn">{m.sym}</span>
+              <span className="tv">{m.val > 999 ? m.val.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}) : m.val.toFixed(2)}</span>
+              <span className={`tc ${m.chg >= 0 ? "up" : "dn"}`}>{m.chg >= 0 ? "▲" : "▼"} {Math.abs(m.chg).toFixed(2)}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── HERO ── */}
+      <div className="hero">
+        <div>
+          <div className="hbadge fu d1"><div className="ldot" />AI-Powered Market Intelligence</div>
+          <h1 className="fu d2">Markets move.<br /><em>Move first.</em></h1>
+          <p className="hp fu d3">Real-time AI signals, curated stock picks, and institutional-grade intelligence — built for investors who refuse to be second.</p>
+          <div className="hbtns fu d4">
+            <button className="bh">Start Free Trial →</button>
+            <button className
             <div className="ti" key={i}>
               <span className="tn">{m.sym}</span>
               <span className="tv">{m.val > 999 ? m.val.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}) : m.val.toFixed(2)}</span>

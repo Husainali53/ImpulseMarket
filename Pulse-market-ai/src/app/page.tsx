@@ -1,4 +1,29 @@
 "use client";
+
+import { useState, useEffect } from "react";
+
+// 👇 YAHAN PASTE KARO
+
+const INDIAN_INDICES = [
+  { name: "NIFTY 50", value: 22456, change: 0.45 },
+  { name: "BANK NIFTY", value: 48210, change: -0.32 },
+  { name: "SENSEX", value: 74210, change: 0.61 },
+];
+
+const MARKET_BREADTH = {
+  advances: 1324,
+  declines: 892,
+  unchanged: 143,
+};
+
+const FII_DII = {
+  fii: 1245.32,
+  dii: -832.12,
+};
+const INDIAN_STOCKS = [
+  { name: "RELIANCE", price: 2845, change: 1.2 },
+  { name: "TCS", price: 4012, change: -0.5 },
+];
 import { useState, useEffect, useRef } from "react";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -8,6 +33,46 @@ import {
 // ── GENERATE CHART DATA ───────────────────────────────────────────
 function genArea(base: number, pts: number, vol: number) {
   let v = base;
+ return (
+  <main className="p-10 bg-black text-white min-h-screen">
+
+    {/* INDIAN INDICES */}
+    <div>
+      <h2>Indian Indices</h2>
+      {INDIAN_INDICES.map((index) => (
+        <div key={index.name}>
+          {index.name} - {index.value} ({index.change}%)
+        </div>
+      ))}
+    </div>
+
+    {/* MARKET BREADTH */}
+    <div>
+      <h2>Advance / Decline</h2>
+      <p>Adv: {MARKET_BREADTH.advances}</p>
+      <p>Dec: {MARKET_BREADTH.declines}</p>
+      <p>Unch: {MARKET_BREADTH.unchanged}</p>
+    </div>
+
+    {/* FII DII */}
+    <div>
+      <h2>FII / DII</h2>
+      <p>FII: {FII_DII.fii}</p>
+      <p>DII: {FII_DII.dii}</p>
+    </div>
+
+    {/* STOCK LIST */}
+    <div>
+      <h2>Top Stocks</h2>
+      {stocks.map((stock) => (
+        <div key={stock.name}>
+          {stock.name} - ₹{stock.price} ({stock.change}%)
+        </div>
+      ))}
+    </div>
+
+  </main>
+);
   return Array.from({ length: pts }, (_, i) => {
     v = v + (Math.random() - 0.48) * vol;
     const d = new Date(2024, 0, i + 1);
@@ -119,6 +184,9 @@ function MiniSpark({ data, up }: { data: { v: number }[]; up: boolean }) {
 }
 
 // ── GAUGE ─────────────────────────────────────────────────────────
+export default function Home() {
+
+  const [stocks, setStocks] = useState(INDIAN_STOCKS);
 function Gauge({ score }: { score: number }) {
   const a = -135 + (score / 100) * 270;
   const label = score >= 75 ? "Strongly Bullish" : score >= 55 ? "Moderately Bullish" : score >= 45 ? "Neutral" : score >= 30 ? "Bearish" : "Strongly Bearish";

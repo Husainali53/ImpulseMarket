@@ -1,13 +1,10 @@
 'use client'
 
 import { useState, useEffect } from "react"
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid } from "recharts"
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid, Cell } from "recharts"
 
 // Generate sample chart data
 function genData(start: number, points: number) {
-  const data = []
-  for (let i = 0; i < points; i++) {
-    data.push({ v: Math.round(start + (Math.random() - 0.5) * 200), t: `Day ${i + 1}` })
   }
   return data
 }

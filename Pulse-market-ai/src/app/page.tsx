@@ -209,7 +209,7 @@ function Globe3D() {
 }
 
 // ── 3D FLOATING CARDS ────────────────────────────────────────────
-function Card3D({children,className,style}:{children:React.ReactNode;className?:string;style?:React.CSSProperties}) {
+function Card3D({children,className,style,onClick}:{children:React.ReactNode;className?:string;style?:React.CSSProperties;onClick?:()=>void}) {
   const ref = useRef<HTMLDivElement>(null);
   const handleMove = (e: React.MouseEvent) => {
     const el = ref.current; if (!el) return;
@@ -226,7 +226,7 @@ function Card3D({children,className,style}:{children:React.ReactNode;className?:
   };
   return (
     <div ref={ref} className={className} style={{transition:"transform 0.15s ease,box-shadow 0.15s ease",...style}}
-      onMouseMove={handleMove} onMouseLeave={handleLeave}>
+      onClick={onClick} onMouseMove={handleMove} onMouseLeave={handleLeave}>
       {children}
     </div>
   );

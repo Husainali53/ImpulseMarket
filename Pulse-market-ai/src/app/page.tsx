@@ -76,13 +76,13 @@ const INDIA_ETFS_DEFAULT = [
   {sym:"ITBEES",     yf:"ITBEES.NS",     name:"Nippon IT BeES",          val:44.20,  chg:-0.60,vol:"2.2M",  mkt:"—", ai:77, cat:"etf", aum:"₹2,200 Cr"},
 ];
 
-const NEWS_DATA = [
-  {cat:"Markets",tag:"Bullish",title:"Fed signals rate cuts ahead — global tech markets surge to record highs",src:"Bloomberg",time:"2m",score:91,hot:true},
-  {cat:"Crypto", tag:"Alert",  title:"Bitcoin breaks $68K resistance — institutional inflows at 3-month peak",src:"CoinDesk",time:"8m", score:88,hot:true},
-  {cat:"Markets",tag:"Analysis",title:"NVDA earnings beat: AI demand drives 40% revenue surge quarter-on-quarter",src:"Reuters",time:"15m",score:94,hot:false},
-  {cat:"Forex",  tag:"Risk",   title:"Dollar weakens ahead of FOMC minutes — EM currencies rally sharply",src:"FX Street",time:"22m",score:72,hot:false},
-  {cat:"Crypto", tag:"Bullish",title:"Ethereum ETF odds rise to 78% — derivatives pricing in significant rally",src:"The Block",time:"44m",score:85,hot:false},
-  {cat:"Markets",tag:"Bearish",title:"China PMI contracts second month — global supply chain risk elevated",src:"FT",time:"1h", score:74,hot:false},
+const NEWS_DATA: NewsItem[] = [
+  {cat:"Markets",tag:"Bullish",title:"Fed signals rate cuts ahead — global tech markets surge to record highs",src:"Bloomberg",time:"2m",score:91,hot:true,  link:""},
+  {cat:"Crypto", tag:"Alert",  title:"Bitcoin breaks $68K resistance — institutional inflows at 3-month peak",src:"CoinDesk",time:"8m", score:88,hot:true,  link:""},
+  {cat:"Markets",tag:"Analysis",title:"NVDA earnings beat: AI demand drives 40% revenue surge quarter-on-quarter",src:"Reuters",time:"15m",score:94,hot:false,link:""},
+  {cat:"Forex",  tag:"Risk",   title:"Dollar weakens ahead of FOMC minutes — EM currencies rally sharply",src:"FX Street",time:"22m",score:72,hot:false,link:""},
+  {cat:"Crypto", tag:"Bullish",title:"Ethereum ETF odds rise to 78% — derivatives pricing in significant rally",src:"The Block",time:"44m",score:85,hot:false,link:""},
+  {cat:"Markets",tag:"Bearish",title:"China PMI contracts second month — global supply chain risk elevated",src:"FT",time:"1h", score:74,hot:false,link:""},
 ];
 const AI_PICKS = [
   {sym:"NVDA",name:"NVIDIA Corp",   act:"STRONG BUY",score:94,entry:"$610",target:"$740",stop:"$570",risk:"Low",   reason:"AI chip supercycle intact. Data center demand structurally elevated.",sector:"Technology",tf:"2–4 wks"},
